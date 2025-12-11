@@ -66,13 +66,7 @@ class OllamaChatModel(ChatModel):
             resp.raise_for_status()
             data = resp.json()
 
-        # Prefer /api/generate shape: {"response": "..."}
         content = data.get("response")
-
-        # Fall back to /api/chat-style shape: {"message": {"content": "..."}}
-        if not content:
-            message = data.get("message") or {}
-            content = message.get("content")
 
         content = (content or "").strip()
 
