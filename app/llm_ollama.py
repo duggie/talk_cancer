@@ -1,3 +1,4 @@
+""" local Ollama-based chat model implementation """
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,9 +11,10 @@ from .llm_base import ChatModel, ChatMessage
 
 @dataclass(frozen=True)
 class OllamaConfig:
+    """ Configuration settings for Ollama """
     base_url: str = "http://localhost:11434"
-    model: str = "llama3.2:3b"  # use the model you actually have locally
-    timeout_seconds: int = 60
+    model: str = "llama3.2:3b"
+    timeout_seconds: int = 120
 
 
 class OllamaChatModel(ChatModel):
@@ -21,7 +23,7 @@ class OllamaChatModel(ChatModel):
 
     We map:
     - system ChatMessages -> Ollama's `system` field
-    - user/assistant ChatMessages -> Ollama's `prompt` field (joined as plain text)
+    - user/assistant ChatMessages -> Ollama's `prompt` field (plain text)
     """
 
     def __init__(self, config: Optional[OllamaConfig] = None):
@@ -54,9 +56,11 @@ class OllamaChatModel(ChatModel):
         if system_text:
             payload["system"] = system_text
 
-        async with httpx.AsyncClient(timeout=self._config.timeout_seconds) as client:
+        async with httpx.AsyncClient(
+            timeout=self._config.timeout_seconds
+        ) as client:
             resp = await client.post(
-                f"{self._config.base_url}/api/generate",  # 👈 important: /api/generate
+                f"{self._config.base_url}/api/generate",
                 json=payload,
             )
             resp.raise_for_status()
@@ -76,7 +80,8 @@ class OllamaChatModel(ChatModel):
             # Safe fallback instead of silently returning ""
             return (
                 "I’m sorry, I could not generate a response just now. "
-                "Please try rephrasing your question, or speak to your GP or cancer team for advice."
+                "Please try rephrasing your question, "
+                "or speak to your GP or cancer team for advice."
             )
 
         return content
