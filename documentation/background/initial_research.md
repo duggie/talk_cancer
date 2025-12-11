@@ -4,8 +4,6 @@
 Tech mini project to showcase my skills, I want to use LLMs to provide tailored advice to people affected by cancer. This is not direct medical advice and is not a replacement for going to a doctor or medical specialist. It is a factual tool and a convenient interface for seeking access to the right information. It might be someone with cancer who wants to describe a new symptom and find out what their next steps might be; or a child of a parent going through cancer treatment and they want to know “does chemo hurt?” Or “will it change my Mum’s mood?”
 Which models are most effective in this space? Write the prompt to deliver this service. I’ll wrap a nice web app interface to it later. It’s probably a RAG solution, pulling in additional reference material from quality medical and charity sources. Keep it local to NI for this version but reference Ireland and UK where NI is lacking in resources or help. Keep the language plain at all times.
 
-Full thread [here](https://chatgpt.com/share/6936d503-2aa8-8003-8b5f-5300d3b8d552)
-
 ### Resulting system prompt
 
 ```
