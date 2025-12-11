@@ -1,8 +1,10 @@
-# tests/test_ollama_chat_model.py
+"""Tests for the OllamaChatModel wrapper around the Ollama HTTP API."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import httpx
 import pytest
 
 from app.llm_base import ChatMessage
@@ -10,27 +12,83 @@ from app.llm_ollama import OllamaChatModel, OllamaConfig
 
 
 class DummyResponse:
-    def __init__(self, json_data: Dict[str, Any], status_code: int = 200):
+    """Simple dummy HTTP response used to stub httpx responses."""
+
+    def __init__(
+        self,
+        json_data: Dict[str, Any],
+        status_code: int = 200,
+    ) -> None:
+        """Store JSON payload and status code."""
         self._json_data = json_data
         self.status_code = status_code
 
     def raise_for_status(self) -> None:
-        if not (200 <= self.status_code < 300):
-            raise RuntimeError(f"HTTP {self.status_code}")
+        """Raise at non-2xx status codes to mimic httpx.Response."""
+        if self.status_code < 200 or self.status_code >= 300:
+            msg = f"HTTP {self.status_code}"
+            raise RuntimeError(msg)
 
     def json(self) -> Dict[str, Any]:
+        """Return the stored JSON payload."""
         return self._json_data
 
 
+class DummyAsyncClient:
+    """Async client that proxies POST calls to a supplied callable."""
+
+    def __init__(
+        self,
+        *args: Any,
+        post_impl: Any,
+        **kwargs: Any,
+    ) -> None:
+        """Accept and store the implementation for POST."""
+        del args, kwargs
+        self._post_impl = post_impl
+
+    async def __aenter__(self) -> "DummyAsyncClient":
+        """Enter the async context manager."""
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type,
+        exc,
+        tb,
+    ) -> None:  # type: ignore[override]
+        """Exit the async context manager."""
+        del exc_type, exc, tb
+        return None
+
+    async def post(
+        self,
+        url: str,
+        json: Dict[str, Any],
+    ) -> DummyResponse:
+        """Delegate POST calls to the injected implementation."""
+        return await self._post_impl(url, json)
+
+
 @pytest.mark.asyncio
-async def test_ollama_chat_model_uses_generate_with_system_and_prompt(monkeypatch):
-    config = OllamaConfig(base_url="http://dummy", model="dummy-model")
+async def test_chat_model_uses_generate_with_system_and_prompt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Ensure chat() calls the generate endpoint with expected payload."""
+    config = OllamaConfig(
+        base_url="http://dummy",
+        model="dummy-model",
+    )
     model = OllamaChatModel(config=config)
 
     captured_payload: Dict[str, Any] = {}
     captured_url: str | None = None
 
-    async def fake_post(url: str, json: Dict[str, Any]):  # type: ignore[override]
+    async def fake_post(
+        url: str,
+        json: Dict[str, Any],
+    ) -> DummyResponse:
+        """Capture request data and return a canned response."""
         nonlocal captured_payload, captured_url
         captured_url = url
         captured_payload = json
@@ -39,25 +97,17 @@ async def test_ollama_chat_model_uses_generate_with_system_and_prompt(monkeypatc
                 "model": "dummy-model",
                 "response": "Hello from fake Ollama.",
                 "done": True,
-            }
+            },
         )
 
-    import httpx
+    def make_dummy_async_client(
+        *_: Any,
+        **kwargs: Any,
+    ) -> DummyAsyncClient:
+        """Return a dummy async client instance."""
+        return DummyAsyncClient(post_impl=fake_post, **kwargs)
 
-    class DummyAsyncClient:
-        def __init__(self, *args: Any, **kwargs: Any):
-            pass
-
-        async def __aenter__(self) -> "DummyAsyncClient":
-            return self
-
-        async def __aexit__(self, exc_type, exc, tb) -> None:  # type: ignore[override]
-            return None
-
-        async def post(self, url: str, json: Dict[str, Any]):  # type: ignore[override]
-            return await fake_post(url, json)
-
-    monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
+    monkeypatch.setattr(httpx, "AsyncClient", make_dummy_async_client)
 
     messages: List[ChatMessage] = [
         ChatMessage(role="system", content="system text"),
