@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import asyncio
 
-from app.assistant_service import CancerInfoAssistant
-from app.llm_ollama import OllamaChatModel
+from .assistant_service import CancerInfoAssistant
+from .llm_ollama import OllamaChatModel
 
 
 async def main() -> None:
