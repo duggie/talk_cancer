@@ -1,6 +1,21 @@
 # talk_cancer
 LLM RAG project to provide a conversational interface to support information for people [in Northern Ireland/Ireland/UK] affected by a cancer diagnosis
 
+## CLI Demo
+
+In order to test the approach, a terminal <abbr title="Command Line Interface">CLI</abbr> version has been created to interact with the LLM.
+
+A proper web-based user interface and User Experience is on the roadmap.
+
+<img src="documentation/assets/cli_demo.gif" alt="A demo of the CLI running in a terminal window" />
+
+(Terminal window recorded with [QuickTime](https://en.wikipedia.org/wiki/QuickTime), then animated using [ffmpeg](https://www.ffmpeg.org).)
+
+**What the demo shows:**
+1. Running the CLI tool (python script)
+1. User providing their question as text input.
+1. App consuming the user question and replying with a natural language response, sympathetic and tailored towards a user located in Northern Ireland.
+
 ---
 
 ## Test Coverage
