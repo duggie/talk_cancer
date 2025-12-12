@@ -7,6 +7,17 @@ https://github.com/duggie/talk_cancer/actions/workflows/pylint.yml
 # talk_cancer
 LLM RAG project to provide a conversational interface to support information for people [in Northern Ireland/Ireland/UK] affected by a cancer diagnosis
 
+## Dependencies
+
+This project uses **[python 3.14](https://www.python.org/downloads/release/python-3140/)**.
+
+## Usage
+
+```
+pip install requirements.txt requirements-dev.txt
+python app.cli
+```
+
 ## CLI Demo
 
 In order to test the approach, a terminal <abbr title="Command Line Interface">CLI</abbr> version has been created to interact with the LLM.
