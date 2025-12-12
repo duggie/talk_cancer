@@ -129,3 +129,67 @@ async def test_chat_model_uses_generate_with_system_and_prompt(
     # 4) System and prompt content are wired correctly
     assert "system text" in captured_payload["system"]
     assert "user question" in captured_payload["prompt"]
+
+
+@pytest.mark.asyncio
+async def test_chat_model_formats_assistant_messages(
+    monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Ensure assistant-role messages use 'Assistant:' prefix in the prompt."""
+    config = OllamaConfig(base_url="http://dummy", model="dummy-model")
+    model = OllamaChatModel(config=config)
+
+    captured_payload: Dict[str, Any] = {}
+    captured_url: str | None = None
+
+    async def fake_post(url: str, json: Dict[str, Any]) -> DummyResponse:
+        nonlocal captured_payload, captured_url
+        captured_url = url
+        captured_payload = json
+        return DummyResponse({"response": "ok"})
+
+    def fake_client_factory(*args: Any, **kwargs: Any) -> DummyAsyncClient:
+        return DummyAsyncClient(*args, post_impl=fake_post, **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
+
+    messages: List[ChatMessage] = [
+        ChatMessage(role="user", content="hello"),
+        ChatMessage(role="assistant", content="hi there"),
+    ]
+
+    reply = await model.chat(messages)
+
+    assert reply == "ok"
+    assert captured_url == "http://dummy/api/generate"
+    # This is the key assertion: the assistant message should be
+    # prefixed correctly.
+    assert "Assistant: hi there" in captured_payload["prompt"]
+
+
+@pytest.mark.asyncio
+async def test_chat_model_returns_safe_fallback_on_blank_response(
+    monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """
+    If Ollama returns empty/whitespace response, return the safe
+    fallback string.
+    """
+    config = OllamaConfig(base_url="http://dummy", model="dummy-model")
+    model = OllamaChatModel(config=config)
+
+    async def fake_post(_url: str, _json: Dict[str, Any]) -> DummyResponse:
+        # whitespace-only should be stripped to "", triggering the fallback
+        return DummyResponse({"response": "   \n\t  "})
+
+    def fake_client_factory(*args: Any, **kwargs: Any) -> DummyAsyncClient:
+        return DummyAsyncClient(*args, post_impl=fake_post, **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
+
+    messages: List[ChatMessage] = [ChatMessage(role="user", content="yup")]
+
+    reply = await model.chat(messages)
+
+    expected = "I’m sorry, I could not generate a response just now."
+    assert reply.startswith(expected)
