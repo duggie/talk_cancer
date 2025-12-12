@@ -1,3 +1,4 @@
+""" Terminal CLI prompt """
 from __future__ import annotations
 
 import asyncio
@@ -7,6 +8,7 @@ from .llm_ollama import OllamaChatModel
 
 
 async def main() -> None:
+    """ Start the app """
     assistant = CancerInfoAssistant(model=OllamaChatModel())
 
     print("Kind Cancer Info – NI (local, Ollama-backed)")
