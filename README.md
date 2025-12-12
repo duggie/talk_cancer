@@ -1,3 +1,9 @@
+[![Pylint](https://github.com/duggie/talk_cancer/actions/workflows/pylint.yml/badge.svg?branch=main)](
+https://github.com/duggie/talk_cancer/actions/workflows/pylint.yml
+)
+
+---
+
 # talk_cancer
 LLM RAG project to provide a conversational interface to support information for people [in Northern Ireland/Ireland/UK] affected by a cancer diagnosis
 
