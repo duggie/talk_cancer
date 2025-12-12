@@ -193,3 +193,25 @@ async def test_chat_model_returns_safe_fallback_on_blank_response(
 
     expected = "I’m sorry, I could not generate a response just now."
     assert reply.startswith(expected)
+
+
+@pytest.mark.asyncio
+async def test_chat_model_raises_on_non_2xx_http_status(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Non-2xx responses should raise via raise_for_status()."""
+    config = OllamaConfig(base_url="http://dummy", model="dummy-model")
+    model = OllamaChatModel(config=config)
+
+    async def fake_post(_url: str, _json: Dict[str, Any]) -> DummyResponse:
+        return DummyResponse({"error": "boom"}, status_code=500)
+
+    def fake_client_factory(*args: Any, **kwargs: Any) -> DummyAsyncClient:
+        return DummyAsyncClient(*args, post_impl=fake_post, **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
+
+    messages: List[ChatMessage] = [ChatMessage(role="user", content="hello")]
+
+    with pytest.raises(RuntimeError, match=r"HTTP 500"):
+        await model.chat(messages)
