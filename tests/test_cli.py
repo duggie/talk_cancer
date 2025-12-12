@@ -55,6 +55,7 @@ class InputFunc(Protocol):
     Any object that is callable, takes an optional str prompt, and returns
     a str.
     """
+
     def __call__(self, prompt: str = "") -> str: ...
 
 
