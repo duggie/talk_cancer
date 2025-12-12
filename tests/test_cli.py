@@ -37,9 +37,7 @@ def dummy_assistant(monkeypatch: pytest.MonkeyPatch) -> DummyAssistant:
     """
     dummy = DummyAssistant(model=DummyModel())
 
-    def assistant_factory(
-        model: DummyModel
-    ) -> DummyAssistant:  # type: ignore[override]
+    def assistant_factory(model: DummyModel) -> DummyAssistant:  # type: ignore[override]
         # Ensure the model passed in is our DummyModel instance type
         assert isinstance(model, DummyModel)
         return dummy
@@ -55,6 +53,7 @@ class InputFunc(Protocol):
     Any object that is callable, takes an optional str prompt, and returns
     a str.
     """
+
     def __call__(self, prompt: str = "") -> str: ...
 
 
