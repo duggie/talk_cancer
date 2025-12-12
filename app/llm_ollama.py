@@ -1,4 +1,5 @@
-""" local Ollama-based chat model implementation """
+"""local Ollama-based chat model implementation"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -11,7 +12,8 @@ from .llm_base import ChatModel, ChatMessage
 
 @dataclass(frozen=True)
 class OllamaConfig:
-    """ Configuration settings for Ollama """
+    """Configuration settings for Ollama"""
+
     base_url: str = "http://localhost:11434"
     model: str = "llama3.2:3b"
     timeout_seconds: int = 120
@@ -56,9 +58,7 @@ class OllamaChatModel(ChatModel):
         if system_text:
             payload["system"] = system_text
 
-        async with httpx.AsyncClient(
-            timeout=self._config.timeout_seconds
-        ) as client:
+        async with httpx.AsyncClient(timeout=self._config.timeout_seconds) as client:
             resp = await client.post(
                 f"{self._config.base_url}/api/generate",
                 json=payload,

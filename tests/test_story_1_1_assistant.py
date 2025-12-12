@@ -1,4 +1,5 @@
-""" Tests for user story 1.1 Ask free-form questions """
+"""Tests for user story 1.1 Ask free-form questions"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,7 +22,7 @@ class FakeChatModel(ChatModel):
     recorded_messages: List[ChatMessage] | None = None
 
     async def chat(self, messages: List[ChatMessage]) -> str:
-        """ Chat function to help with tests """
+        """Chat function to help with tests"""
         self.recorded_messages = list(messages)
         return self.response_text
 

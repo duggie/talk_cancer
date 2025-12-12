@@ -133,7 +133,7 @@ async def test_chat_model_uses_generate_with_system_and_prompt(
 
 @pytest.mark.asyncio
 async def test_chat_model_formats_assistant_messages(
-    monkeypatch: pytest.MonkeyPatch
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Ensure assistant-role messages use 'Assistant:' prefix in the prompt."""
     config = OllamaConfig(base_url="http://dummy", model="dummy-model")
@@ -169,7 +169,7 @@ async def test_chat_model_formats_assistant_messages(
 
 @pytest.mark.asyncio
 async def test_chat_model_returns_safe_fallback_on_blank_response(
-    monkeypatch: pytest.MonkeyPatch
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """
     If Ollama returns empty/whitespace response, return the safe
