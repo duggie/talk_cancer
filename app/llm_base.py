@@ -1,4 +1,5 @@
-""" app/llm_base.py """
+"""app/llm_base.py"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,7 +11,8 @@ Role = Literal["system", "user", "assistant"]
 
 @dataclass(frozen=True)
 class ChatMessage:
-    """ ChatMessage """
+    """ChatMessage"""
+
     role: Role
     content: str
 

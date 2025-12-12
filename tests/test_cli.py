@@ -1,5 +1,5 @@
 # pylint: disable=redefined-outer-name
-""" tests/test_cli.py """
+"""tests/test_cli.py"""
 
 from __future__ import annotations
 
@@ -36,9 +36,7 @@ def dummy_assistant(monkeypatch: pytest.MonkeyPatch) -> DummyAssistant:
     """
     dummy = DummyAssistant(model=DummyModel())
 
-    def assistant_factory(
-        model: DummyModel
-    ) -> DummyAssistant:  # type: ignore[override]
+    def assistant_factory(model: DummyModel) -> DummyAssistant:  # type: ignore[override]
         # Ensure the model passed in is our DummyModel instance type
         assert isinstance(model, DummyModel)
         return dummy
