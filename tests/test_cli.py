@@ -139,11 +139,10 @@ async def test_main_handles_eoferror_gracefully(
     """
     If input() raises EOFError, main() should print '\\nBye.' and return.
     """
-
-    def raise_eof(prompt: str = "") -> str:
-        raise EOFError
-
-    monkeypatch.setattr(builtins, "input", raise_eof)
+    # No responses -> first call to fake_input triggers StopIteration,
+    # which _make_input_function converts into EOFError.
+    fake_input = _make_input_function([])
+    monkeypatch.setattr(builtins, "input", fake_input)
 
     await cli.main()
 
