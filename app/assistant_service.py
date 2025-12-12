@@ -1,4 +1,5 @@
-""" app/assistant_service.py """
+"""app/assistant_service.py"""
+
 from __future__ import annotations
 
 from typing import List
