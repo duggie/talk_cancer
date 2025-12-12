@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import builtins
-from typing import Iterable, Iterator, List
+from collections.abc import Iterable, Iterator
+from typing import List, Protocol
 
 import pytest
 
@@ -36,7 +37,9 @@ def dummy_assistant(monkeypatch: pytest.MonkeyPatch) -> DummyAssistant:
     """
     dummy = DummyAssistant(model=DummyModel())
 
-    def assistant_factory(model: DummyModel) -> DummyAssistant:  # type: ignore[override]
+    def assistant_factory(
+        model: DummyModel
+    ) -> DummyAssistant:  # type: ignore[override]
         # Ensure the model passed in is our DummyModel instance type
         assert isinstance(model, DummyModel)
         return dummy
@@ -47,7 +50,15 @@ def dummy_assistant(monkeypatch: pytest.MonkeyPatch) -> DummyAssistant:
     return dummy
 
 
-def _make_input_function(responses: Iterable[str]) -> builtins.input:
+class InputFunc(Protocol):
+    """
+    Any object that is callable, takes an optional str prompt, and returns
+    a str.
+    """
+    def __call__(self, prompt: str = "") -> str: ...
+
+
+def _make_input_function(responses: Iterable[str]) -> InputFunc:
     """
     Create a fake input() that sequentially returns the given responses.
     If it is called more times than there are responses, it raises EOFError
@@ -64,7 +75,7 @@ def _make_input_function(responses: Iterable[str]) -> builtins.input:
         except StopIteration as exc:
             raise EOFError from exc
 
-    return fake_input  # type: ignore[return-value]
+    return fake_input
 
 
 @pytest.mark.asyncio
