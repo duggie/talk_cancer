@@ -1,4 +1,5 @@
 """tests/test_llm_base.py"""
+
 import pytest
 
 from app.llm_base import ChatModel, ChatMessage
