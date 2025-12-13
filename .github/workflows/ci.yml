@@ -43,6 +43,9 @@ jobs:
       - name: Pyright (types)
         run: pyright
 
+      - name: Bandit (security lint)
+        run: bandit -q -r app
+
       - name: pip-audit (dependency vulnerabilities)
         run: pip-audit
 
