@@ -45,13 +45,14 @@ Name                                Stmts   Miss Branch BrPart  Cover
 ---------------------------------------------------------------------
 app/__init__.py                         0      0      0      0   100%
 app/assistant_service.py               10      0      0      0   100%
-app/cli.py                             23      1      6      1    93%
-app/llm_base.py                        10      0      0      0   100%
-app/llm_ollama.py                      35      1      8      2    93%
-tests/test_cli.py                      74      2      0      0    97%
-tests/test_ollama_chat_model.py        48      2      2      1    94%
+app/cli.py                             21      0      4      0   100%
+app/llm_base.py                        13      0      0      0   100%
+app/llm_ollama.py                      35      0      8      0   100%
+tests/test_cli.py                      83      0      2      1    99%
+tests/test_llm_base.py                  6      0      0      0   100%
+tests/test_ollama_chat_model.py        91      0      2      0   100%
 tests/test_story_1_1_assistant.py      31      0      0      0   100%
 ---------------------------------------------------------------------
-TOTAL                                 231      6     16      4    96%
-============================== 7 passed in 0.13s ===============================
+TOTAL                                 290      0     16      1    99%
+============================== 13 passed in 0.28s ==============================
 ```
