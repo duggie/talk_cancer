@@ -1,6 +1,4 @@
-[![Pylint](https://github.com/duggie/talk_cancer/actions/workflows/pylint.yml/badge.svg?branch=main)](
-https://github.com/duggie/talk_cancer/actions/workflows/pylint.yml
-)
+[![Analyse application](https://github.com/duggie/talk_cancer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/duggie/talk_cancer/actions/workflows/ci.yml)
 
 ---
 
