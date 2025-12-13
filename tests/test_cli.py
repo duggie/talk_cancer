@@ -177,3 +177,19 @@ async def test_main_handles_keyboardinterrupt_gracefully(
 
     captured = capsys.readouterr().out
     assert "\nBye." in captured
+
+
+def test_make_input_function_raises_eoferror_when_exhausted() -> None:
+    """raise EOF error"""
+    fake_input = _make_input_function([])
+
+    with pytest.raises(EOFError):
+        fake_input("")
+
+
+def test_make_input_function_asserts_prompt_is_str() -> None:
+    """string input prompt"""
+    fake_input = _make_input_function(["x"])
+
+    with pytest.raises(AssertionError):
+        fake_input(None)  # type: ignore[arg-type]
