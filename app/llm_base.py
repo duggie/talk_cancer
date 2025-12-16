@@ -28,4 +28,3 @@ class ChatModel(Protocol):
         """
         Send a list of messages to the model and return the assistant's reply.
         """
-        raise NotImplementedError
