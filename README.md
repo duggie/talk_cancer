@@ -9,6 +9,20 @@ LLM RAG project to provide a conversational interface to support information for
 
 This project uses **[python 3.14](https://www.python.org/downloads/release/python-3140/)**.
 
+## Setup
+
+(Assumes you are using macOS.)
+
+```
+brew install pyenv
+pyenv install 3.14
+pyenv local 3.14
+python --version  # Python 3.14.2
+python -m venv venv
+source venv/bin/activate
+python --version  # Python 3.14.2
+```
+
 ## Usage
 
 ```
