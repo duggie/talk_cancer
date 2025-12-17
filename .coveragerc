@@ -1,6 +1,10 @@
 [run]
 branch = True
 source = app
+omit =
+    noxfile.py
+    .nox/*
+    venv/*
 
 [report]
 exclude_lines =
