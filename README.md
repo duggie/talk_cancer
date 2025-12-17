@@ -29,7 +29,7 @@ python --version  # Python 3.14.2, correct 2025-12
 
 ```
 pip install requirements.txt requirements-dev.txt
-python app.cli
+python -m app.cli
 ```
 
 ## CLI Demo
