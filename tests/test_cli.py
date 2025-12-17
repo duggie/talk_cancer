@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import builtins
 from collections.abc import Callable, Iterable, Iterator
-from typing import List
 
 import pytest
 
@@ -21,7 +20,7 @@ class DummyAssistant:
 
     def __init__(self, model: DummyModel) -> None:
         self.model = model
-        self.received_questions: List[str] = []
+        self.received_questions: list[str] = []
 
     async def answer_question(self, question: str) -> str:
         """Mimic answering the question."""

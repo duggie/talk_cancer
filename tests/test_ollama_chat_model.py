@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 import pytest
@@ -16,7 +16,7 @@ class DummyResponse:
 
     def __init__(
         self,
-        json_data: Dict[str, Any],
+        json_data: dict[str, Any],
         status_code: int = 200,
     ) -> None:
         """Store JSON payload and status code."""
@@ -29,7 +29,7 @@ class DummyResponse:
             msg = f"HTTP {self.status_code}"
             raise RuntimeError(msg)
 
-    def json(self) -> Dict[str, Any]:
+    def json(self) -> dict[str, Any]:
         """Return the stored JSON payload."""
         return self._json_data
 
@@ -47,7 +47,7 @@ class DummyAsyncClient:
         del args, kwargs
         self._post_impl = post_impl
 
-    async def __aenter__(self) -> "DummyAsyncClient":
+    async def __aenter__(self) -> DummyAsyncClient:
         """Enter the async context manager."""
         return self
 
@@ -64,7 +64,7 @@ class DummyAsyncClient:
     async def post(
         self,
         url: str,
-        json: Dict[str, Any],
+        json: dict[str, Any],
     ) -> DummyResponse:
         """Delegate POST calls to the injected implementation."""
         return await self._post_impl(url, json)
@@ -81,12 +81,12 @@ async def test_chat_model_uses_generate_with_system_and_prompt(
     )
     model = OllamaChatModel(config=config)
 
-    captured_payload: Dict[str, Any] = {}
+    captured_payload: dict[str, Any] = {}
     captured_url: str | None = None
 
     async def fake_post(
         url: str,
-        json: Dict[str, Any],
+        json: dict[str, Any],
     ) -> DummyResponse:
         """Capture request data and return a canned response."""
         nonlocal captured_payload, captured_url
@@ -109,7 +109,7 @@ async def test_chat_model_uses_generate_with_system_and_prompt(
 
     monkeypatch.setattr(httpx, "AsyncClient", make_dummy_async_client)
 
-    messages: List[ChatMessage] = [
+    messages: list[ChatMessage] = [
         ChatMessage(role="system", content="system text"),
         ChatMessage(role="user", content="user question"),
     ]
@@ -139,10 +139,10 @@ async def test_chat_model_formats_assistant_messages(
     config = OllamaConfig(base_url="http://dummy", model="dummy-model")
     model = OllamaChatModel(config=config)
 
-    captured_payload: Dict[str, Any] = {}
+    captured_payload: dict[str, Any] = {}
     captured_url: str | None = None
 
-    async def fake_post(url: str, json: Dict[str, Any]) -> DummyResponse:
+    async def fake_post(url: str, json: dict[str, Any]) -> DummyResponse:
         nonlocal captured_payload, captured_url
         captured_url = url
         captured_payload = json
@@ -153,7 +153,7 @@ async def test_chat_model_formats_assistant_messages(
 
     monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
 
-    messages: List[ChatMessage] = [
+    messages: list[ChatMessage] = [
         ChatMessage(role="user", content="hello"),
         ChatMessage(role="assistant", content="hi there"),
     ]
@@ -178,7 +178,7 @@ async def test_chat_model_returns_safe_fallback_on_blank_response(
     config = OllamaConfig(base_url="http://dummy", model="dummy-model")
     model = OllamaChatModel(config=config)
 
-    async def fake_post(_url: str, _json: Dict[str, Any]) -> DummyResponse:
+    async def fake_post(_url: str, _json: dict[str, Any]) -> DummyResponse:
         # whitespace-only should be stripped to "", triggering the fallback
         return DummyResponse({"response": "   \n\t  "})
 
@@ -187,7 +187,7 @@ async def test_chat_model_returns_safe_fallback_on_blank_response(
 
     monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
 
-    messages: List[ChatMessage] = [ChatMessage(role="user", content="yup")]
+    messages: list[ChatMessage] = [ChatMessage(role="user", content="yup")]
 
     reply = await model.chat(messages)
 
@@ -203,7 +203,7 @@ async def test_chat_model_raises_on_non_2xx_http_status(
     config = OllamaConfig(base_url="http://dummy", model="dummy-model")
     model = OllamaChatModel(config=config)
 
-    async def fake_post(_url: str, _json: Dict[str, Any]) -> DummyResponse:
+    async def fake_post(_url: str, _json: dict[str, Any]) -> DummyResponse:
         return DummyResponse({"error": "boom"}, status_code=500)
 
     def fake_client_factory(*args: Any, **kwargs: Any) -> DummyAsyncClient:
@@ -211,7 +211,7 @@ async def test_chat_model_raises_on_non_2xx_http_status(
 
     monkeypatch.setattr(httpx, "AsyncClient", fake_client_factory)
 
-    messages: List[ChatMessage] = [ChatMessage(role="user", content="hello")]
+    messages: list[ChatMessage] = [ChatMessage(role="user", content="hello")]
 
     with pytest.raises(RuntimeError, match=r"HTTP 500"):
         await model.chat(messages)
