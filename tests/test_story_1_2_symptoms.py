@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 
 import pytest
 
@@ -18,9 +17,9 @@ class RecordingChatModel(ChatModel):
     """
 
     reply: str = "dummy reply"
-    recorded_messages: List[ChatMessage] | None = None
+    recorded_messages: list[ChatMessage] | None = None
 
-    async def chat(self, messages: List[ChatMessage]) -> str:
+    async def chat(self, messages: list[ChatMessage]) -> str:
         self.recorded_messages = list(messages)
         return self.reply
 

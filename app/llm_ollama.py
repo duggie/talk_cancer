@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -28,12 +28,12 @@ class OllamaChatModel(ChatModel):
     - user/assistant ChatMessages -> Ollama's `prompt` field (plain text)
     """
 
-    def __init__(self, config: Optional[OllamaConfig] = None):
+    def __init__(self, config: OllamaConfig | None = None):
         self._config = config or OllamaConfig()
 
-    async def chat(self, messages: List[ChatMessage]) -> str:
-        system_parts: List[str] = []
-        prompt_parts: List[str] = []
+    async def chat(self, messages: list[ChatMessage]) -> str:
+        system_parts: list[str] = []
+        prompt_parts: list[str] = []
 
         for msg in messages:
             if msg.role == "system":
@@ -45,7 +45,7 @@ class OllamaChatModel(ChatModel):
         system_text = "\n\n".join(system_parts) if system_parts else ""
         prompt_text = "\n\n".join(prompt_parts) if prompt_parts else ""
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": self._config.model,
             "prompt": prompt_text,
             "stream": False,

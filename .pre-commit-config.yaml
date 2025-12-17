@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      - id: nox-quality
+        name: nox -s quality (reuse venv)
+        entry: nox -s quality -R
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: nox-tests
+        name: nox -s tests (reuse venv)
+        entry: nox -s tests -R
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

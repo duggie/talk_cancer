@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Protocol, Literal, List
+from typing import Protocol, Literal
 
 
 Role = Literal["system", "user", "assistant"]
@@ -24,7 +24,7 @@ class ChatModel(Protocol):
     """
 
     @abstractmethod
-    async def chat(self, messages: List[ChatMessage]) -> str:
+    async def chat(self, messages: list[ChatMessage]) -> str:
         """
         Send a list of messages to the model and return the assistant's reply.
         """

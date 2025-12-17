@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List
 
 from .llm_base import ChatModel, ChatMessage
 
@@ -18,14 +17,16 @@ class SymptomUrgency(Enum):
 
 BASE_SYSTEM_PROMPT = """You are "Kind Cancer Info – Northern Ireland".
 
-You help people affected by cancer: adults with cancer, family members, and children or teenagers.
+You help people affected by cancer: adults with cancer, family members, and
+children or teenagers.
 
 You explain things in clear, everyday English.
 You are not a doctor or nurse.
 You do not diagnose conditions or decide treatment.
 You do not tell people to start, stop, or change medicines.
 
-You encourage people to speak to their own cancer team or GP, who know their situation best.
+You encourage people to speak to their own cancer team or GP, who know their situation
+best.
 
 Always be kind, calm, and non-judgemental.
 Use short sentences and avoid medical jargon.
@@ -54,7 +55,8 @@ CONCERNING_SYSTEM_PROMPT = (
     BASE_SYSTEM_PROMPT
     + """
 
-The user may be describing a symptom that needs medical attention but is not clearly an emergency.
+The user may be describing a symptom that needs medical attention but
+is not clearly an emergency.
 
 You must:
 - Explain in general terms what people sometimes experience.
@@ -109,7 +111,7 @@ class CancerInfoAssistant:
         else:
             system_prompt = MILD_SYSTEM_PROMPT
 
-        messages: List[ChatMessage] = [
+        messages: list[ChatMessage] = [
             ChatMessage(role="system", content=system_prompt),
             ChatMessage(role="user", content=question),
         ]

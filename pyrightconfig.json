@@ -1,0 +1,12 @@
+{
+  "exclude": [
+    ".coverage",
+    ".nox",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".vscode",
+    "noxfile.py",
+    "venv"
+  ],
+  "useLibraryCodeForTypes": false
+}

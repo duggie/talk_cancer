@@ -1,0 +1,4 @@
+exclude = ["noxfile.py"]
+
+[lint]
+select = ["E", "F", "B", "UP"]
