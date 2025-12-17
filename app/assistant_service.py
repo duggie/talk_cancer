@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .llm_base import ChatModel, ChatMessage
+from .llm_base import ChatMessage, ChatModel
 
 
 class SymptomUrgency(Enum):
@@ -81,6 +81,29 @@ You must:
 )
 
 
+TREATMENT_SYSTEM_PROMPT = (
+    BASE_SYSTEM_PROMPT
+    + """
+
+The user is asking what a test, scan, or treatment involves (for example: chemotherapy,
+radiotherapy, surgery, CT scans).
+
+You must:
+- Explain it in clear, simple terms.
+- Describe common experiences people often ask about:
+  - how long it takes (time),
+  - whether it hurts or feels uncomfortable (pain or discomfort),
+  - common side effects (side effects).
+- Be reassuring without making promises. You can say things like "many people find…"
+and “this is often manageable”.
+- Make it clear that the detail varies from person to person and between hospitals.
+- Remind them their hospital team and doctor are the authority and can tell them
+exactly what to expect for their situation.
+- Suggest a few practical questions they can ask their team.
+"""
+)
+
+
 class CancerInfoAssistant:
     """
     High-level assistant for answering questions.
@@ -102,20 +125,22 @@ class CancerInfoAssistant:
         trigger a RED_FLAG for use of word "fever".
         *** Note: this is NOT a diagnostic tool. ***
         """
-        urgency = classify_symptom_urgency(question)
-
-        if urgency == SymptomUrgency.RED_FLAG:
-            system_prompt = RED_FLAG_SYSTEM_PROMPT
-        elif urgency == SymptomUrgency.CONCERNING:
-            system_prompt = CONCERNING_SYSTEM_PROMPT
+        if is_treatment_or_procedure_question(question):
+            system_prompt = TREATMENT_SYSTEM_PROMPT
         else:
-            system_prompt = MILD_SYSTEM_PROMPT
+            urgency = classify_symptom_urgency(question)
+
+            if urgency == SymptomUrgency.RED_FLAG:
+                system_prompt = RED_FLAG_SYSTEM_PROMPT
+            elif urgency == SymptomUrgency.CONCERNING:
+                system_prompt = CONCERNING_SYSTEM_PROMPT
+            else:
+                system_prompt = MILD_SYSTEM_PROMPT
 
         messages: list[ChatMessage] = [
             ChatMessage(role="system", content=system_prompt),
             ChatMessage(role="user", content=question),
         ]
-
         return await self._model.chat(messages)
 
 
@@ -144,3 +169,61 @@ def classify_symptom_urgency(text: str) -> SymptomUrgency:
         if any(condition(t) for condition in conditions):
             return urgency
     return SymptomUrgency.MILD
+
+
+def is_treatment_or_procedure_question(text: str) -> bool:
+    """
+    Determine the type of question being asked. This is based simply on a scan
+    of the words being used in the user-supplied prompt. This is deliberately
+    simple. It's not relying on complex NLP or algorithm behaviour.
+    """
+    t = text.lower()
+
+    treatment_terms = (
+        "chemotherapy",
+        "chemo",
+        "radiotherapy",
+        "radio therapy",
+        "surgery",
+        "operation",
+        "immunotherapy",
+        "hormone therapy",
+        "hormonal therapy",
+        "targeted therapy",
+    )
+
+    test_scan_terms = (
+        "ct scan",
+        "ct",
+        "mri",
+        "pet",
+        "x-ray",
+        "xray",
+        "scan",
+        "biopsy",
+        "blood test",
+        "endoscopy",
+        "colonoscopy",
+        "stent",
+        "port",
+        "picc",
+    )
+
+    question_cues = (
+        "what is",
+        "what happens",
+        "what will happen",
+        "what is it like",
+        "how does",
+        "how long",
+        "does it hurt",
+        "will it hurt",
+        "what should i expect",
+    )
+
+    mentions_treatment_or_test = any(
+        term in t for term in (*treatment_terms, *test_scan_terms)
+    )
+    looks_like_question = "?" in t or any(cue in t for cue in question_cues)
+
+    return mentions_treatment_or_test and looks_like_question
