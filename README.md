@@ -27,6 +27,8 @@ python --version  # Python 3.14.2, correct 2025-12
 
 ## Usage
 
+For local development purposes, use [Ollama](https://ollama.com) to run [llama3.2:3b](https://ollama.com/library/llama3.2:3b) model locally on `localhost` port `11434`.
+
 ```
 pip install -r requirements.txt -r requirements-dev.txt
 python -m app.cli
