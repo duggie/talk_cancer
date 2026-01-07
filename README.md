@@ -28,7 +28,7 @@ python --version  # Python 3.14.2, correct 2025-12
 ## Usage
 
 ```
-pip install requirements.txt requirements-dev.txt
+pip install -r requirements.txt -r requirements-dev.txt
 python -m app.cli
 ```
 
@@ -52,6 +52,8 @@ A proper web-based user interface and User Experience is on the roadmap.
 ## Test Coverage
 
 ```
+pytest --cov=.
+
 Name                                Stmts   Miss Branch BrPart  Cover
 ---------------------------------------------------------------------
 app/__init__.py                          0      0      0      0   100%
